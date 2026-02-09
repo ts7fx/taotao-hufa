@@ -60,10 +60,21 @@ class ContentAnalyzer:
         findings = []
         thin_pages = []
 
+        # 功能性页面路径，不需要大量文字内容
+        functional_paths = (
+            "/register", "/login", "/signup", "/signin",
+            "/cart", "/checkout", "/account", "/profile",
+            "/reset-password", "/forgot-password", "/verify",
+            "/unsubscribe", "/settings", "/dashboard",
+        )
+
         for url, page in self.pages.items():
             if page.status_code != 200:
                 continue
-            # 只对文章/博客页面检查字数
+            from urllib.parse import urlparse
+            path = urlparse(url).path.rstrip("/").lower()
+            if any(path == fp or path.endswith(fp) for fp in functional_paths):
+                continue
             if page.word_count < 300 and page.word_count > 0:
                 thin_pages.append((url, page.word_count))
 
