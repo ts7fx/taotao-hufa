@@ -1,0 +1,1783 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>桃桃护法 - https://tenmomo.com 分析报告</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: #f0f2f5;
+    color: #333;
+    line-height: 1.6;
+}
+.container { max-width: 1100px; margin: 0 auto; padding: 20px; }
+
+/* 头部 */
+.header {
+    text-align: center;
+    padding: 40px 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 16px;
+    margin-bottom: 30px;
+}
+.header h1 { font-size: 2em; margin-bottom: 8px; }
+.header .subtitle { opacity: 0.9; font-size: 1.1em; }
+.header .meta { margin-top: 12px; font-size: 0.9em; opacity: 0.8; }
+
+/* 综合评分 */
+.overall-score {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 30px 0;
+}
+.score-circle {
+    width: 160px; height: 160px;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: white;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+}
+.score-circle .number { font-size: 3em; line-height: 1; }
+.score-circle .grade { font-size: 1.2em; margin-top: 4px; opacity: 0.9; }
+
+.grade-A { background: linear-gradient(135deg, #43a047, #66bb6a); }
+.grade-B { background: linear-gradient(135deg, #7cb342, #9ccc65); }
+.grade-C { background: linear-gradient(135deg, #ffa726, #ffb74d); }
+.grade-D { background: linear-gradient(135deg, #ef5350, #e57373); }
+.grade-F { background: linear-gradient(135deg, #c62828, #e53935); }
+
+/* 四维评分卡片 */
+.score-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin-bottom: 30px;
+}
+.score-card {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    text-align: center;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    transition: transform 0.2s;
+}
+.score-card:hover { transform: translateY(-2px); }
+.score-card .cat-name { font-size: 1em; color: #666; margin-bottom: 8px; }
+.score-card .cat-score { font-size: 2.5em; font-weight: bold; }
+.score-card .cat-grade {
+    display: inline-block;
+    padding: 2px 12px;
+    border-radius: 12px;
+    font-weight: bold;
+    font-size: 0.85em;
+    margin-top: 4px;
+}
+.score-card .cat-counts { margin-top: 10px; font-size: 0.85em; color: #888; }
+
+.text-A { color: #43a047; }
+.text-B { color: #7cb342; }
+.text-C { color: #ffa726; }
+.text-D { color: #ef5350; }
+.text-F { color: #c62828; }
+
+.badge-A { background: #e8f5e9; color: #2e7d32; }
+.badge-B { background: #f1f8e9; color: #558b2f; }
+.badge-C { background: #fff8e1; color: #f57f17; }
+.badge-D { background: #fbe9e7; color: #bf360c; }
+.badge-F { background: #ffebee; color: #b71c1c; }
+
+/* 分析详情 */
+.section {
+    background: white;
+    border-radius: 12px;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    overflow: hidden;
+}
+.section-header {
+    padding: 20px 24px;
+    background: #fafbfc;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.section-header h2 { font-size: 1.3em; }
+.section-badge {
+    padding: 4px 16px;
+    border-radius: 20px;
+    font-weight: bold;
+    font-size: 0.9em;
+}
+
+/* 发现列表 */
+.finding {
+    padding: 16px 24px;
+    border-bottom: 1px solid #f0f0f0;
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+}
+.finding:last-child { border-bottom: none; }
+.finding-icon {
+    flex-shrink: 0;
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    margin-top: 2px;
+}
+.icon-good { background: #e8f5e9; color: #43a047; }
+.icon-info { background: #e3f2fd; color: #1976d2; }
+.icon-warning { background: #fff8e1; color: #f9a825; }
+.icon-error { background: #ffebee; color: #e53935; }
+
+.finding-body { flex: 1; }
+.finding-title { font-weight: 600; margin-bottom: 4px; }
+.finding-desc { color: #666; font-size: 0.9em; white-space: pre-line; }
+.finding-rec {
+    margin-top: 6px;
+    padding: 6px 10px;
+    background: #f8f9fa;
+    border-left: 3px solid #667eea;
+    font-size: 0.85em;
+    color: #555;
+    border-radius: 0 4px 4px 0;
+}
+.finding-url { font-size: 0.8em; color: #999; margin-top: 4px; word-break: break-all; }
+
+/* 页脚 */
+.footer {
+    text-align: center;
+    padding: 30px;
+    color: #999;
+    font-size: 0.85em;
+}
+
+/* 响应式 */
+@media (max-width: 600px) {
+    .score-cards { grid-template-columns: repeat(2, 1fr); }
+    .header h1 { font-size: 1.5em; }
+    .score-circle { width: 120px; height: 120px; }
+    .score-circle .number { font-size: 2.2em; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+<div class="header">
+    <h1>🍑 桃桃护法</h1>
+    <div class="subtitle">网站分析报告 — https://tenmomo.com</div>
+    <div class="meta">
+        爬取 50 个页面 · 耗时 43.8s · 2026-02-09 09:09:59
+    </div>
+</div>
+
+<div class="overall-score">
+    <div class="score-circle grade-F">
+        <span class="number">37</span>
+        <span class="grade">F 级</span>
+    </div>
+</div>
+
+<div class="score-cards">
+
+    <div class="score-card">
+        <div class="cat-name">SEO</div>
+        <div class="cat-score text-F">0</div>
+        <div class="cat-grade badge-F">F 级</div>
+        <div class="cat-counts">
+            ✅ 40　⚠️ 34　❌ 1
+        </div>
+    </div>
+
+    <div class="score-card">
+        <div class="cat-name">性能</div>
+        <div class="cat-score text-B">80</div>
+        <div class="cat-grade badge-B">B 级</div>
+        <div class="cat-counts">
+            ✅ 4　⚠️ 4　❌ 0
+        </div>
+    </div>
+
+    <div class="score-card">
+        <div class="cat-name">内容</div>
+        <div class="cat-score text-C">70</div>
+        <div class="cat-grade badge-C">C 级</div>
+        <div class="cat-counts">
+            ✅ 0　⚠️ 3　❌ 1
+        </div>
+    </div>
+
+    <div class="score-card">
+        <div class="cat-name">安全</div>
+        <div class="cat-score text-F">0</div>
+        <div class="cat-grade badge-F">F 级</div>
+        <div class="cat-counts">
+            ✅ 1　⚠️ 0　❌ 7
+        </div>
+    </div>
+
+</div>
+
+
+<div class="section">
+    <div class="section-header">
+        <h2>SEO 分析</h2>
+        <span class="section-badge badge-F">0 分 · F 级</span>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-warning">
+            !
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">title 过短</div>
+            <div class="finding-desc">title 只有 4 字符: 'Blog'</div>
+            
+            <div class="finding-rec">💡 建议 title 长度在 10-60 字符之间</div>
+            
+            
+            <div class="finding-url">📎 https://tenmomo.com</div>
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-good">
+            ✓
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">title 长度合适</div>
+            <div class="finding-desc">'All Stores' (10 字符)</div>
+            
+            
+            <div class="finding-url">📎 https://tenmomo.com/stores</div>
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-warning">
+            !
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">title 过短</div>
+            <div class="finding-desc">title 只有 8 字符: 'Register'</div>
+            
+            <div class="finding-rec">💡 建议 title 长度在 10-60 字符之间</div>
+            
+            
+            <div class="finding-url">📎 https://tenmomo.com/register</div>
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-warning">
+            !
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">title 过长</div>
+            <div class="finding-desc">title 有 62 字符，搜索结果中可能被截断</div>
+            
+            <div class="finding-rec">💡 建议 title 长度在 10-60 字符之间</div>
+            
+            
+            <div class="finding-url">📎 https://tenmomo.com/blog/sky-blue-credit-review-2026</div>
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-good">
+            ✓
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">title 长度合适</div>
+            <div class="finding-desc">'Heivy Review 2026: Is This Liquid Collagen Worth It?' (52 字符)</div>
+            
+            
+            <div class="finding-url">📎 https://tenmomo.com/blog/heivy-review-2026</div>
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-good">
+            ✓
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">title 长度合适</div>
+            <div class="finding-desc">'Life Extension Cashback 2026: Compare Rates 3-10% | tenmomo' (59 字符)</div>
+            
+            
+            <div class="finding-url">📎 https://tenmomo.com/blog/life-extension-cashback</div>
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-warning">
+            !
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">title 过长</div>
+            <div class="finding-desc">title 有 64 字符，搜索结果中可能被截断</div>
+            
+            <div class="finding-rec">💡 建议 title 长度在 10-60 字符之间</div>
+            
+            
+            <div class="finding-url">📎 https://tenmomo.com/blog/naturemade-cashback-2026</div>
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-warning">
+            !
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">title 过长</div>
+            <div class="finding-desc">title 有 61 字符，搜索结果中可能被截断</div>
+            
+            <div class="finding-rec">💡 建议 title 长度在 10-60 字符之间</div>
+            
+            
+            <div class="finding-url">📎 https://tenmomo.com/blog/naturemade-cashback</div>
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-good">
+            ✓
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">title 长度合适</div>
+            <div class="finding-desc">'Luvme Hair Coupon Code 2026: Save Up to 30% OFF' (47 字符)</div>
+            
+            
+            <div class="finding-url">📎 https://tenmomo.com/blog/luvme-hair-coupon-code-2026</div>
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-good">
+            ✓
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">title 长度合适</div>
+            <div class="finding-desc">'CountAbout Review 2026' (22 字符)</div>
+            
+            
+            <div class="finding-url">📎 https://tenmomo.com/blog/countabout-review-2026</div>
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-warning">
+            !
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">title 过长</div>
+            <div class="finding-desc">title 有 65 字符，搜索结果中可能被截断</div>
+            
+            <div class="finding-rec">💡 建议 title 长度在 10-60 字符之间</div>
+            
+            
+            <div class="finding-url">📎 https://tenmomo.com/blog/shakeplease-vs-daily-harvest-2026</div>
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-warning">
+            !
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">title 过短</div>
+            <div class="finding-desc">title 只有 8 字符: 'Cashback'</div>
+            
+            <div class="finding-rec">💡 建议 title 长度在 10-60 字符之间</div>
+            
+            
+            <div class="finding-url">📎 https://tenmomo.com/cashback</div>
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-good">
+            ✓
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">title 长度合适</div>
+            <div class="finding-desc">'All Coupons & Deals Categories' (30 字符)</div>
+            
+            
+            <div class="finding-url">📎 https://tenmomo.com/categories</div>
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-warning">
+            !
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">title 过短</div>
+            <div class="finding-desc">title 只有 5 字符: 'Login'</div>
+            
+            <div class="finding-rec">💡 建议 title 长度在 10-60 字符之间</div>
+            
+            
+            <div class="finding-url">📎 https://tenmomo.com/dashboard</div>
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-good">
+            ✓
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">title 长度合适</div>
+            <div class="finding-desc">'All Stores' (10 字符)</div>
+            
+            
+            <div class="finding-url">📎 https://tenmomo.com/stores/a</div>
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-good">
+            ✓
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">title 长度合适</div>
+            <div class="finding-desc">'All Stores' (10 字符)</div>
+            
+            
+            <div class="finding-url">📎 https://tenmomo.com/stores/b</div>
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-good">
+            ✓
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">title 长度合适</div>
+            <div class="finding-desc">'All Stores' (10 字符)</div>
+            
+            
+            <div class="finding-url">📎 https://tenmomo.com/stores/c</div>
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-good">
+            ✓
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">title 长度合适</div>
+            <div class="finding-desc">'All Stores' (10 字符)</div>
+            
+            
+            <div class="finding-url">📎 https://tenmomo.com/stores/d</div>
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-good">
+            ✓
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">title 长度合适</div>
+            <div class="finding-desc">'All Stores' (10 字符)</div>
+            
+            
+            <div class="finding-url">📎 https://tenmomo.com/stores/e</div>
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-good">
+            ✓
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">title 长度合适</div>
+            <div class="finding-desc">'All Stores' (10 字符)</div>
+            
+            
+            <div class="finding-url">📎 https://tenmomo.com/stores/f</div>
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-good">
+            ✓
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">title 长度合适</div>
+            <div class="finding-desc">'All Stores' (10 字符)</div>
+            
+            
+            <div class="finding-url">📎 https://tenmomo.com/stores/g</div>
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-good">
+            ✓
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">title 长度合适</div>
+            <div class="finding-desc">'All Stores' (10 字符)</div>
+            
+            
+            <div class="finding-url">📎 https://tenmomo.com/stores/h</div>
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-good">
+            ✓
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">title 长度合适</div>
+            <div class="finding-desc">'All Stores' (10 字符)</div>
+            
+            
+            <div class="finding-url">📎 https://tenmomo.com/stores/i</div>
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-good">
+            ✓
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">title 长度合适</div>
+            <div class="finding-desc">'All Stores' (10 字符)</div>
+            
+            
+            <div class="finding-url">📎 https://tenmomo.com/stores/j</div>
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-good">
+            ✓
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">title 长度合适</div>
+            <div class="finding-desc">'All Stores' (10 字符)</div>
+            
+            
+            <div class="finding-url">📎 https://tenmomo.com/stores/k</div>
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-good">
+            ✓
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">title 长度合适</div>
+            <div class="finding-desc">'All Stores' (10 字符)</div>
+            
+            
+            <div class="finding-url">📎 https://tenmomo.com/stores/l</div>
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-good">
+            ✓
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">title 长度合适</div>
+            <div class="finding-desc">'All Stores' (10 字符)</div>
+            
+            
+            <div class="finding-url">📎 https://tenmomo.com/stores/m</div>
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-good">
+            ✓
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">title 长度合适</div>
+            <div class="finding-desc">'All Stores' (10 字符)</div>
+            
+            
+            <div class="finding-url">📎 https://tenmomo.com/stores/n</div>
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-good">
+            ✓
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">title 长度合适</div>
+            <div class="finding-desc">'All Stores' (10 字符)</div>
+            
+            
+            <div class="finding-url">📎 https://tenmomo.com/stores/o</div>
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-good">
+            ✓
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">title 长度合适</div>
+            <div class="finding-desc">'All Stores' (10 字符)</div>
+            
+            
+            <div class="finding-url">📎 https://tenmomo.com/stores/p</div>
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-good">
+            ✓
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">title 长度合适</div>
+            <div class="finding-desc">'All Stores' (10 字符)</div>
+            
+            
+            <div class="finding-url">📎 https://tenmomo.com/stores/q</div>
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-good">
+            ✓
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">title 长度合适</div>
+            <div class="finding-desc">'All Stores' (10 字符)</div>
+            
+            
+            <div class="finding-url">📎 https://tenmomo.com/stores/r</div>
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-good">
+            ✓
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">title 长度合适</div>
+            <div class="finding-desc">'All Stores' (10 字符)</div>
+            
+            
+            <div class="finding-url">📎 https://tenmomo.com/stores/s</div>
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-good">
+            ✓
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">title 长度合适</div>
+            <div class="finding-desc">'All Stores' (10 字符)</div>
+            
+            
+            <div class="finding-url">📎 https://tenmomo.com/stores/t</div>
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-good">
+            ✓
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">title 长度合适</div>
+            <div class="finding-desc">'All Stores' (10 字符)</div>
+            
+            
+            <div class="finding-url">📎 https://tenmomo.com/stores/u</div>
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-good">
+            ✓
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">title 长度合适</div>
+            <div class="finding-desc">'All Stores' (10 字符)</div>
+            
+            
+            <div class="finding-url">📎 https://tenmomo.com/stores/v</div>
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-good">
+            ✓
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">title 长度合适</div>
+            <div class="finding-desc">'All Stores' (10 字符)</div>
+            
+            
+            <div class="finding-url">📎 https://tenmomo.com/stores/w</div>
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-good">
+            ✓
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">title 长度合适</div>
+            <div class="finding-desc">'All Stores' (10 字符)</div>
+            
+            
+            <div class="finding-url">📎 https://tenmomo.com/stores/x</div>
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-good">
+            ✓
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">title 长度合适</div>
+            <div class="finding-desc">'All Stores' (10 字符)</div>
+            
+            
+            <div class="finding-url">📎 https://tenmomo.com/stores/y</div>
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-good">
+            ✓
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">title 长度合适</div>
+            <div class="finding-desc">'All Stores' (10 字符)</div>
+            
+            
+            <div class="finding-url">📎 https://tenmomo.com/stores/z</div>
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-good">
+            ✓
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">title 长度合适</div>
+            <div class="finding-desc">'Health and Wellness' (19 字符)</div>
+            
+            
+            <div class="finding-url">📎 https://tenmomo.com/category/health-and-wellness</div>
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-good">
+            ✓
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">title 长度合适</div>
+            <div class="finding-desc">'Health Food' (11 字符)</div>
+            
+            
+            <div class="finding-url">📎 https://tenmomo.com/category/health-and-wellness/health-food</div>
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-good">
+            ✓
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">title 长度合适</div>
+            <div class="finding-desc">'Nutritional Supplements' (23 字符)</div>
+            
+            
+            <div class="finding-url">📎 https://tenmomo.com/category/health-and-wellness/nutritional-supplements</div>
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-good">
+            ✓
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">title 长度合适</div>
+            <div class="finding-desc">'Vision Care' (11 字符)</div>
+            
+            
+            <div class="finding-url">📎 https://tenmomo.com/category/health-and-wellness/vision-care</div>
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-warning">
+            !
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">title 过短</div>
+            <div class="finding-desc">title 只有 8 字符: 'Wellness'</div>
+            
+            <div class="finding-rec">💡 建议 title 长度在 10-60 字符之间</div>
+            
+            
+            <div class="finding-url">📎 https://tenmomo.com/category/health-and-wellness/wellness</div>
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-warning">
+            !
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">title 过短</div>
+            <div class="finding-desc">title 只有 9 字符: 'Self Help'</div>
+            
+            <div class="finding-rec">💡 建议 title 长度在 10-60 字符之间</div>
+            
+            
+            <div class="finding-url">📎 https://tenmomo.com/category/health-and-wellness/self-help</div>
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-warning">
+            !
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">缺少 meta description</div>
+            <div class="finding-desc">页面没有 meta description</div>
+            
+            <div class="finding-rec">💡 添加 50-160 字符的描述，包含关键词</div>
+            
+            
+            <div class="finding-url">📎 https://tenmomo.com</div>
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-warning">
+            !
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">缺少 meta description</div>
+            <div class="finding-desc">页面没有 meta description</div>
+            
+            <div class="finding-rec">💡 添加 50-160 字符的描述，包含关键词</div>
+            
+            
+            <div class="finding-url">📎 https://tenmomo.com/register</div>
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-warning">
+            !
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">meta description 过长</div>
+            <div class="finding-desc">166 字符，搜索结果中会被截断</div>
+            
+            <div class="finding-rec">💡 建议 50-160 字符</div>
+            
+            
+            <div class="finding-url">📎 https://tenmomo.com/blog/sky-blue-credit-review-2026</div>
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-warning">
+            !
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">缺少 meta description</div>
+            <div class="finding-desc">页面没有 meta description</div>
+            
+            <div class="finding-rec">💡 添加 50-160 字符的描述，包含关键词</div>
+            
+            
+            <div class="finding-url">📎 https://tenmomo.com/blog/heivy-review-2026</div>
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-warning">
+            !
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">缺少 meta description</div>
+            <div class="finding-desc">页面没有 meta description</div>
+            
+            <div class="finding-rec">💡 添加 50-160 字符的描述，包含关键词</div>
+            
+            
+            <div class="finding-url">📎 https://tenmomo.com/blog/naturemade-cashback</div>
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-warning">
+            !
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">meta description 过长</div>
+            <div class="finding-desc">170 字符，搜索结果中会被截断</div>
+            
+            <div class="finding-rec">💡 建议 50-160 字符</div>
+            
+            
+            <div class="finding-url">📎 https://tenmomo.com/blog/countabout-review-2026</div>
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-warning">
+            !
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">meta description 过长</div>
+            <div class="finding-desc">176 字符，搜索结果中会被截断</div>
+            
+            <div class="finding-rec">💡 建议 50-160 字符</div>
+            
+            
+            <div class="finding-url">📎 https://tenmomo.com/blog/shakeplease-vs-daily-harvest-2026</div>
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-warning">
+            !
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">缺少 meta description</div>
+            <div class="finding-desc">页面没有 meta description</div>
+            
+            <div class="finding-rec">💡 添加 50-160 字符的描述，包含关键词</div>
+            
+            
+            <div class="finding-url">📎 https://tenmomo.com/cashback</div>
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-warning">
+            !
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">缺少 meta description</div>
+            <div class="finding-desc">页面没有 meta description</div>
+            
+            <div class="finding-rec">💡 添加 50-160 字符的描述，包含关键词</div>
+            
+            
+            <div class="finding-url">📎 https://tenmomo.com/categories</div>
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-warning">
+            !
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">缺少 meta description</div>
+            <div class="finding-desc">页面没有 meta description</div>
+            
+            <div class="finding-rec">💡 添加 50-160 字符的描述，包含关键词</div>
+            
+            
+            <div class="finding-url">📎 https://tenmomo.com/dashboard</div>
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-warning">
+            !
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">缺少 meta description</div>
+            <div class="finding-desc">页面没有 meta description</div>
+            
+            <div class="finding-rec">💡 添加 50-160 字符的描述，包含关键词</div>
+            
+            
+            <div class="finding-url">📎 https://tenmomo.com/category/health-and-wellness</div>
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-warning">
+            !
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">缺少 meta description</div>
+            <div class="finding-desc">页面没有 meta description</div>
+            
+            <div class="finding-rec">💡 添加 50-160 字符的描述，包含关键词</div>
+            
+            
+            <div class="finding-url">📎 https://tenmomo.com/category/health-and-wellness/health-food</div>
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-warning">
+            !
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">缺少 meta description</div>
+            <div class="finding-desc">页面没有 meta description</div>
+            
+            <div class="finding-rec">💡 添加 50-160 字符的描述，包含关键词</div>
+            
+            
+            <div class="finding-url">📎 https://tenmomo.com/category/health-and-wellness/nutritional-supplements</div>
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-warning">
+            !
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">缺少 meta description</div>
+            <div class="finding-desc">页面没有 meta description</div>
+            
+            <div class="finding-rec">💡 添加 50-160 字符的描述，包含关键词</div>
+            
+            
+            <div class="finding-url">📎 https://tenmomo.com/category/health-and-wellness/vision-care</div>
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-warning">
+            !
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">缺少 meta description</div>
+            <div class="finding-desc">页面没有 meta description</div>
+            
+            <div class="finding-rec">💡 添加 50-160 字符的描述，包含关键词</div>
+            
+            
+            <div class="finding-url">📎 https://tenmomo.com/category/health-and-wellness/wellness</div>
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-warning">
+            !
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">缺少 meta description</div>
+            <div class="finding-desc">页面没有 meta description</div>
+            
+            <div class="finding-rec">💡 添加 50-160 字符的描述，包含关键词</div>
+            
+            
+            <div class="finding-url">📎 https://tenmomo.com/category/health-and-wellness/self-help</div>
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-warning">
+            !
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">多个 H1 标签</div>
+            <div class="finding-desc">页面有 2 个 H1: ['Heivy Review 2026: Is This Liquid Collagen Worth It?', 'Heivy Review 2026: Is This Liquid Collagen Worth It?']</div>
+            
+            <div class="finding-rec">💡 每个页面只保留一个 H1</div>
+            
+            
+            <div class="finding-url">📎 https://tenmomo.com/blog/heivy-review-2026</div>
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-warning">
+            !
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">多个 H1 标签</div>
+            <div class="finding-desc">页面有 2 个 H1: ['How to Get Cashback on Life Extension Supplements (2026 Guide)', 'How to Get Cashback on Life Extension Supplements (2026 Guide)']</div>
+            
+            <div class="finding-rec">💡 每个页面只保留一个 H1</div>
+            
+            
+            <div class="finding-url">📎 https://tenmomo.com/blog/life-extension-cashback</div>
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-warning">
+            !
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">多个 H1 标签</div>
+            <div class="finding-desc">页面有 2 个 H1: ['NatureMade Cashback: Up to 20% Back on 182 Products (2026Guide)', 'NatureMade Cashback: Get Up to 20% Back on 182 Products (2026Guide)']</div>
+            
+            <div class="finding-rec">💡 每个页面只保留一个 H1</div>
+            
+            
+            <div class="finding-url">📎 https://tenmomo.com/blog/naturemade-cashback-2026</div>
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-warning">
+            !
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">多个 H1 标签</div>
+            <div class="finding-desc">页面有 2 个 H1: ['NatureMade Cashback: Get Up to 15% Back (Higher Than Rakuten)', 'NatureMade Cashback: Get Up to 15% Back (Higher Than Rakuten)']</div>
+            
+            <div class="finding-rec">💡 每个页面只保留一个 H1</div>
+            
+            
+            <div class="finding-url">📎 https://tenmomo.com/blog/naturemade-cashback</div>
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-good">
+            ✓
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">图片 alt 属性完整</div>
+            <div class="finding-desc">所有 378 张图片都有 alt 属性</div>
+            
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-warning">
+            !
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">Open Graph 标签不完整</div>
+            <div class="finding-desc">首页缺少: og:title, og:description, og:url</div>
+            
+            <div class="finding-rec">💡 添加完整的 OG 标签以优化社交媒体分享</div>
+            
+            
+            <div class="finding-url">📎 https://tenmomo.com</div>
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-warning">
+            !
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">缺少 JSON-LD 结构化数据</div>
+            <div class="finding-desc">未发现 JSON-LD 数据</div>
+            
+            <div class="finding-rec">💡 添加 Article/Product/Organization 等 JSON-LD 标记</div>
+            
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-good">
+            ✓
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">robots.txt 存在</div>
+            <div class="finding-desc">网站有 robots.txt 文件</div>
+            
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-good">
+            ✓
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">sitemap.xml 存在</div>
+            <div class="finding-desc">网站有 sitemap.xml</div>
+            
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-error">
+            ✕
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">重复标题</div>
+            <div class="finding-desc">'All Stores' 在 27 个页面中重复使用</div>
+            
+            <div class="finding-rec">💡 每个页面使用唯一的 title</div>
+            
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-good">
+            ✓
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">[DataForSEO] OnPage 评分: 96.3/100</div>
+            <div class="finding-desc">基于 DataForSEO 专业评估的页面优化得分</div>
+            
+            
+            <div class="finding-url">📎 https://tenmomo.com</div>
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-warning">
+            !
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">[DataForSEO] title 标签过短</div>
+            <div class="finding-desc">DataForSEO 检测到: title_too_short</div>
+            
+            
+            <div class="finding-url">📎 https://tenmomo.com</div>
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-info">
+            i
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">[DataForSEO] 图片缺少 title 属性</div>
+            <div class="finding-desc">DataForSEO 检测到: no_image_title</div>
+            
+            
+            <div class="finding-url">📎 https://tenmomo.com</div>
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-warning">
+            !
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">[DataForSEO] 缺少 meta description</div>
+            <div class="finding-desc">DataForSEO 检测到: no_description</div>
+            
+            
+            <div class="finding-url">📎 https://tenmomo.com</div>
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-info">
+            i
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">[DataForSEO] 页面元数据摘要</div>
+            <div class="finding-desc">  title: 'Blog' (4 字符)
+  meta description: 0 字符
+  纯文本: 414 词
+  可读性 (Flesch): 58.2
+  内容占比: 4.3%
+  OG 标签: 1 个</div>
+            
+            
+            <div class="finding-url">📎 https://tenmomo.com</div>
+            
+        </div>
+    </div>
+    
+</div>
+
+<div class="section">
+    <div class="section-header">
+        <h2>性能 分析</h2>
+        <span class="section-badge badge-B">80 分 · B 级</span>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-warning">
+            !
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">1 个页面响应较慢（1-3s）</div>
+            <div class="finding-desc">  - https://tenmomo.com/cashback (1.9s)</div>
+            
+            <div class="finding-rec">💡 考虑使用 CDN、页面缓存或优化服务端渲染</div>
+            
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-good">
+            ✓
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">45 个页面响应良好（<1s）</div>
+            <div class="finding-desc">这些页面的响应时间在可接受范围内</div>
+            
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-warning">
+            !
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">11 个页面 HTML 过大（>100KB）</div>
+            <div class="finding-desc">  - https://tenmomo.com/cashback (148.9 KB)
+  - https://tenmomo.com/categories (136.4 KB)
+  - https://tenmomo.com/stores/s (126.5 KB)
+  - https://tenmomo.com/stores/m (114.2 KB)
+  - https://tenmomo.com/stores/a (111.8 KB)</div>
+            
+            <div class="finding-rec">💡 压缩 HTML、移除内联 CSS/JS、启用服务端压缩</div>
+            
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-warning">
+            !
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">未使用 WebP 图片格式</div>
+            <div class="finding-desc">发现 93 个 PNG、1 个 JPG，但没有 WebP</div>
+            
+            <div class="finding-rec">💡 将图片转换为 WebP 格式可减少 25-35% 文件大小</div>
+            
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-good">
+            ✓
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">启用了 Gzip 压缩</div>
+            <div class="finding-desc">服务器使用 Gzip 压缩</div>
+            
+            <div class="finding-rec">💡 考虑升级到 Brotli 以获得更好的压缩率</div>
+            
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-info">
+            i
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">HTTP/2 支持未确认</div>
+            <div class="finding-desc">无法通过 HTTP/1.1 请求确认 HTTP/2 支持</div>
+            
+            <div class="finding-rec">💡 确保服务器或 CDN 支持 HTTP/2 以提升并发加载速度</div>
+            
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-warning">
+            !
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">[DataForSEO] 存在渲染阻塞资源</div>
+            <div class="finding-desc">DataForSEO 检测到: has_render_blocking_resources</div>
+            
+            
+            <div class="finding-url">📎 https://tenmomo.com</div>
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-good">
+            ✓
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">[DataForSEO] Time to Interactive: 0.68s</div>
+            <div class="finding-desc">页面可交互所需时间（<3s 良好，>5s 需优化）</div>
+            
+            
+            <div class="finding-url">📎 https://tenmomo.com</div>
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-good">
+            ✓
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">[DataForSEO] DOM Complete: 2.08s</div>
+            <div class="finding-desc">DOM 加载完成时间</div>
+            
+            
+            <div class="finding-url">📎 https://tenmomo.com</div>
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-info">
+            i
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">[DataForSEO] 页面大小: 56.7KB (压缩后 14.9KB)</div>
+            <div class="finding-desc">压缩编码: gzip</div>
+            
+            
+            <div class="finding-url">📎 https://tenmomo.com</div>
+            
+        </div>
+    </div>
+    
+</div>
+
+<div class="section">
+    <div class="section-header">
+        <h2>内容 分析</h2>
+        <span class="section-badge badge-C">70 分 · C 级</span>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-info">
+            i
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">页面统计</div>
+            <div class="finding-desc">共爬取 50 个页面：46 个正常，4 个错误，0 个无响应</div>
+            
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-error">
+            ✕
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">发现 4 个死链</div>
+            <div class="finding-desc">  - https://tenmomo.com/privacy-policy
+  - https://tenmomo.com/store/heivycom
+  - https://tenmomo.com/store/naturemadecom
+  - https://tenmomo.com/store/luvme-hair</div>
+            
+            <div class="finding-rec">💡 修复或移除这些失效链接，设置 301 重定向</div>
+            
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-warning">
+            !
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">19 个页面内容过少（<300 字）</div>
+            <div class="finding-desc">  - https://tenmomo.com/dashboard (83 字)
+  - https://tenmomo.com/register (104 字)
+  - https://tenmomo.com/stores (115 字)
+  - https://tenmomo.com/stores/q (120 字)
+  - https://tenmomo.com/stores/y (127 字)
+  - https://tenmomo.com/stores/z (136 字)
+  - https://tenmomo.com/stores/x (142 字)
+  - https://tenmomo.com/stores/j (151 字)
+  - https://tenmomo.com/stores/u (174 字)
+  - https://tenmomo.com/stores/o (189 字)</div>
+            
+            <div class="finding-rec">💡 丰富页面内容，确保为用户提供有价值的信息</div>
+            
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-info">
+            i
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">内容字数统计</div>
+            <div class="finding-desc">平均 452 字/页，最少 83 字，最多 1529 字</div>
+            
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-info">
+            i
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">内部链接统计</div>
+            <div class="finding-desc">平均每页 80 个内部链接</div>
+            
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-warning">
+            !
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">1 组重复标题</div>
+            <div class="finding-desc">  'All Stores' (27 个页面)</div>
+            
+            <div class="finding-rec">💡 确保每个页面有唯一的标题</div>
+            
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-warning">
+            !
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">[DataForSEO] 内容占比过低（纯文本占比低）</div>
+            <div class="finding-desc">DataForSEO 检测到: low_content_rate</div>
+            
+            
+            <div class="finding-url">📎 https://tenmomo.com</div>
+            
+        </div>
+    </div>
+    
+</div>
+
+<div class="section">
+    <div class="section-header">
+        <h2>安全 分析</h2>
+        <span class="section-badge badge-F">0 分 · F 级</span>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-good">
+            ✓
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">使用 HTTPS</div>
+            <div class="finding-desc">网站通过 HTTPS 安全连接提供服务</div>
+            
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-error">
+            ✕
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">缺少 HSTS</div>
+            <div class="finding-desc">启用 HSTS 强制浏览器使用 HTTPS</div>
+            
+            <div class="finding-rec">💡 添加 Strict-Transport-Security: max-age=31536000; includeSubDomains</div>
+            
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-error">
+            ✕
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">缺少 CSP（内容安全策略）</div>
+            <div class="finding-desc">CSP 可防止 XSS 和数据注入攻击</div>
+            
+            <div class="finding-rec">💡 配置 Content-Security-Policy 头限制资源加载来源</div>
+            
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-error">
+            ✕
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">缺少 X-Frame-Options</div>
+            <div class="finding-desc">防止页面被嵌入 iframe（点击劫持防护）</div>
+            
+            <div class="finding-rec">💡 添加 X-Frame-Options: DENY 或 SAMEORIGIN</div>
+            
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-error">
+            ✕
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">缺少 X-Content-Type-Options</div>
+            <div class="finding-desc">防止浏览器 MIME 类型嗅探</div>
+            
+            <div class="finding-rec">💡 添加 X-Content-Type-Options: nosniff</div>
+            
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-error">
+            ✕
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">缺少 Referrer-Policy</div>
+            <div class="finding-desc">控制请求中的 Referer 信息泄露</div>
+            
+            <div class="finding-rec">💡 添加 Referrer-Policy: strict-origin-when-cross-origin</div>
+            
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-error">
+            ✕
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">1 个页面存在混合内容</div>
+            <div class="finding-desc">HTTPS 页面中加载了 HTTP 资源:
+  - https://tenmomo.com/blog/shakeplease-vs-daily-harvest-2026 (7 处)</div>
+            
+            <div class="finding-rec">💡 将所有资源引用改为 HTTPS 或使用协议相对 URL</div>
+            
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-error">
+            ✕
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">Cookie 缺少 Secure 属性</div>
+            <div class="finding-desc">Cookie 未设置 Secure 标志，可能通过 HTTP 传输</div>
+            
+            <div class="finding-rec">💡 为所有 Cookie 添加 Secure 属性</div>
+            
+            
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-icon icon-info">
+            i
+        </div>
+        <div class="finding-body">
+            <div class="finding-title">Server 头存在</div>
+            <div class="finding-desc">Server: nginx（未暴露版本号）</div>
+            
+            
+        </div>
+    </div>
+    
+</div>
+
+
+<div class="footer">
+    🍑 桃桃护法 v1.0 — tenmomo.com 的守护工具<br>
+    报告生成于 2026-02-09 09:09:59
+</div>
+
+</div>
+</body>
+</html>
