@@ -4,6 +4,8 @@ import argparse
 import os
 import sys
 import time
+from datetime import datetime
+from urllib.parse import urlparse
 
 from crawler import Crawler
 from analyzers import SEOAnalyzer, PerformanceAnalyzer, ContentAnalyzer, SecurityAnalyzer
@@ -114,7 +116,7 @@ DataForSEO API:
     parser.add_argument("url", help="目标网站 URL")
     parser.add_argument("--max-pages", type=int, default=50, help="最大爬取页面数（默认 50）")
     parser.add_argument("--delay", type=float, default=1.0, help="请求间隔秒数（默认 1.0）")
-    parser.add_argument("-o", "--output", default="report.html", help="报告输出文件名（默认 report.html）")
+    parser.add_argument("-o", "--output", default="", help="报告输出路径（默认 reports/时间戳_tenmomo.html）")
     parser.add_argument("--dataforseo-login", default="",
                         help="DataForSEO API 登录名（或设置 DATAFORSEO_LOGIN 环境变量）")
     parser.add_argument("--dataforseo-password", default="",
@@ -129,7 +131,17 @@ DataForSEO API:
     dfs_login = args.dataforseo_login or os.environ.get("DATAFORSEO_LOGIN", "")
     dfs_password = args.dataforseo_password or os.environ.get("DATAFORSEO_PASSWORD", "")
 
-    run_analysis(args.url, args.max_pages, args.delay, args.output, dfs_login, dfs_password)
+    # 默认输出到 reports/ 目录，时间戳命名
+    output = args.output
+    if not output:
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        reports_dir = os.path.join(script_dir, "reports")
+        os.makedirs(reports_dir, exist_ok=True)
+        domain = urlparse(args.url).netloc.replace(".", "_")
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        output = os.path.join(reports_dir, f"{timestamp}_{domain}.html")
+
+    run_analysis(args.url, args.max_pages, args.delay, output, dfs_login, dfs_password)
 
 
 if __name__ == "__main__":
