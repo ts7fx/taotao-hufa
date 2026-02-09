@@ -112,32 +112,43 @@ class PerformanceAnalyzer:
         png_count = 0
         jpg_count = 0
         webp_count = 0
+        # <picture><source type="image/webp"> 包裹的 <img> 已有 WebP，
+        # 其 src 保留 PNG/JPG 是正确的 fallback 写法，不应计为"未使用 WebP"
+        picture_webp_count = 0
 
         for page in self.pages.values():
             if page.status_code != 200:
                 continue
             for img in page.images:
                 src = img.get("src", "").lower()
-                if src.endswith(".png"):
+                if img.get("has_webp_source"):
+                    picture_webp_count += 1
+                elif src.endswith(".webp"):
+                    webp_count += 1
+                elif src.endswith(".png"):
                     png_count += 1
                 elif src.endswith((".jpg", ".jpeg")):
                     jpg_count += 1
-                elif src.endswith(".webp"):
-                    webp_count += 1
 
+        total_webp = webp_count + picture_webp_count
         findings = []
-        if png_count + jpg_count > 0 and webp_count == 0:
+        if png_count + jpg_count > 0 and total_webp == 0:
             findings.append(Finding(
                 category=Category.PERFORMANCE, severity=Severity.WARNING,
                 title="未使用 WebP 图片格式",
                 description=f"发现 {png_count} 个 PNG、{jpg_count} 个 JPG，但没有 WebP",
                 recommendation="将图片转换为 WebP 格式可减少 25-35% 文件大小",
             ))
-        elif webp_count > 0:
+        elif total_webp > 0:
+            desc_parts = [f"WebP: {total_webp}"]
+            if picture_webp_count:
+                desc_parts.append(f"（其中 {picture_webp_count} 个通过 <picture> 提供）")
+            if png_count or jpg_count:
+                desc_parts.append(f", 剩余 PNG: {png_count}, JPG: {jpg_count}")
             findings.append(Finding(
                 category=Category.PERFORMANCE, severity=Severity.GOOD,
                 title="使用了 WebP 图片格式",
-                description=f"WebP: {webp_count}, PNG: {png_count}, JPG: {jpg_count}",
+                description="".join(desc_parts),
             ))
 
         return findings

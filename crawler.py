@@ -92,11 +92,21 @@ class Crawler:
         page.h2_tags = [h.get_text(strip=True) for h in soup.find_all("h2")]
         page.h3_tags = [h.get_text(strip=True) for h in soup.find_all("h3")]
 
-        # 图片
+        # 图片（识别 <picture> + <source type="image/webp"> 的标准写法）
         for img in soup.find_all("img"):
+            has_webp_source = False
+            parent = img.parent
+            if parent and parent.name == "picture":
+                for source in parent.find_all("source"):
+                    stype = (source.get("type") or "").lower()
+                    srcset = (source.get("srcset") or "").lower()
+                    if "webp" in stype or srcset.endswith(".webp"):
+                        has_webp_source = True
+                        break
             page.images.append({
                 "src": img.get("src", ""),
                 "alt": img.get("alt", ""),
+                "has_webp_source": has_webp_source,
             })
 
         # 链接
